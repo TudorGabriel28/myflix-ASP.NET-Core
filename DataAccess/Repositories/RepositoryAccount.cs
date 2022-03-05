@@ -22,5 +22,22 @@ namespace DataAccess.Repositories
         {
             return await _context.Accounts.CountAsync();
         }
+
+        public async Task<Account> GetByVerificationTokenAsync(string verificationToken)
+        {
+            return await _context.Accounts.SingleOrDefaultAsync(x => x.VerificationToken == verificationToken);
+        }
+
+        public async Task<Account> GetByValidResetTokenAsync(string resetToken)
+        {
+            return await _context.Accounts.SingleOrDefaultAsync(x =>
+                x.ResetToken == resetToken &&
+                x.ResetTokenExpires > DateTime.UtcNow);
+        }
+
+        public async Task<Account> GetByRefreshTokenAsync(string refreshToken)
+        {
+            return await _context.Accounts.SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == refreshToken));
+        }
     }
 }

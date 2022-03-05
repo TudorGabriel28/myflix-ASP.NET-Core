@@ -35,6 +35,66 @@ namespace BusinessLogic.Services
             _emailService = emailService;
         }
 
+        public async Task<AuthenticateResponse> Authenticate(AuthenticateRequest model, string ipAddress)
+        {
+            // var account = _context.Accounts.SingleOrDefault(x => x.Email == model.Email);
+            var account = await _repository.GetByEmailAsync(model.Email);
+
+            if (account == null || !account.IsVerified || !BC.Verify(model.Password, account.PasswordHash))
+                throw new AppException("Email or password is incorrect");
+
+            // authentication successful so generate jwt and refresh tokens
+            var jwtToken = generateJwtToken(account);
+            var refreshToken = generateRefreshToken(ipAddress);
+            account.RefreshTokens.Add(refreshToken);
+
+            // remove old refresh tokens from account
+            removeOldRefreshTokens(account);
+
+            // save changes to db
+            await _repository.UpdateAsync(account);
+
+            var response = _mapper.Map<AuthenticateResponse>(account);
+            response.JwtToken = jwtToken;
+            response.RefreshToken = refreshToken.Token;
+            return response;
+        }
+
+        public async Task<AuthenticateResponse> RefreshToken(string token, string ipAddress)
+        {
+            var (refreshToken, account) = await getRefreshToken(token);
+
+            // replace old refresh token with a new one and save
+            var newRefreshToken = generateRefreshToken(ipAddress);
+            refreshToken.Revoked = DateTime.UtcNow;
+            refreshToken.RevokedByIp = ipAddress;
+            refreshToken.ReplacedByToken = newRefreshToken.Token;
+            account.RefreshTokens.Add(newRefreshToken);
+
+            removeOldRefreshTokens(account);
+
+            await _repository.UpdateAsync(account);
+            
+            // generate new jwt
+            var jwtToken = generateJwtToken(account);
+
+            var response = _mapper.Map<AuthenticateResponse>(account);
+            response.JwtToken = jwtToken;
+            response.RefreshToken = newRefreshToken.Token;
+            return response;
+        }
+
+        public async Task RevokeToken(string token, string ipAddress)
+        {
+            var (refreshToken, account) = await getRefreshToken(token);
+
+            // revoke token and save
+            refreshToken.Revoked = DateTime.UtcNow;
+            refreshToken.RevokedByIp = ipAddress;
+
+            await _repository.UpdateAsync(account);
+        }
+
         public async Task Register(RegisterRequest model, string origin)
         {
             // validate
@@ -64,29 +124,57 @@ namespace BusinessLogic.Services
             sendVerificationEmail(account, origin);
         }
 
-        public async Task<AuthenticateResponse> Authenticate(AuthenticateRequest model, string ipAddress)
+        public async Task VerifyEmail(string token)
         {
-            // var account = _context.Accounts.SingleOrDefault(x => x.Email == model.Email);
+            var account = await _repository.GetByVerificationTokenAsync(token);
+
+            if (account == null) throw new AppException("Verification failed");
+
+            account.Verified = DateTime.UtcNow;
+            account.VerificationToken = null;
+
+            await _repository.UpdateAsync(account);
+        }
+
+        public async Task ForgotPassword(ForgotPasswordRequest model, string origin)
+        {
             var account = await _repository.GetByEmailAsync(model.Email);
 
-            if (account == null || !account.IsVerified || !BC.Verify(model.Password, account.PasswordHash))
-                throw new AppException("Email or password is incorrect");
+            // always return ok response to prevent email enumeration
+            if (account == null) return;
 
-            // authentication successful so generate jwt and refresh tokens
-            var jwtToken = generateJwtToken(account);
-            var refreshToken = generateRefreshToken(ipAddress);
-            account.RefreshTokens.Add(refreshToken);
+            // create reset token that expires after 1 day
+            account.ResetToken = randomTokenString();
+            account.ResetTokenExpires = DateTime.UtcNow.AddDays(1);
+            
+            _repository.UpdateAsync(account);
+            
+            // send email
+            sendPasswordResetEmail(account, origin);
+        }
 
-            // remove old refresh tokens from account
-            removeOldRefreshTokens(account);
+        public async Task ValidateResetToken(ValidateResetTokenRequest model)
+        {
+            var account = await _repository.GetByValidResetTokenAsync(model.Token);
 
-            // save changes to db
+            if (account == null)
+                throw new AppException("Invalid token");
+        }
+
+        public async Task ResetPassword(ResetPasswordRequest model)
+        {
+            var account = await _repository.GetByValidResetTokenAsync(model.Token);
+
+            if (account == null)
+                throw new AppException("Invalid token");
+
+            // update password and remove reset token
+            account.PasswordHash = BC.HashPassword(model.Password);
+            account.PasswordReset = DateTime.UtcNow;
+            account.ResetToken = null;
+            account.ResetTokenExpires = null;
+
             await _repository.UpdateAsync(account);
-
-            var response = _mapper.Map<AuthenticateResponse>(account);
-            response.JwtToken = jwtToken;
-            response.RefreshToken = refreshToken.Token;
-            return response;
         }
 
         public async Task<IEnumerable<AccountResponse>> GetAll()
@@ -156,6 +244,19 @@ namespace BusinessLogic.Services
             var account = await _repository.GetByIdAsync(id);
             if (account == null) throw new KeyNotFoundException("Account not found");
             return account;
+        }
+
+        private async Task<(RefreshToken, Account)> getRefreshToken(string token)
+        {
+            var account = await _repository.GetByRefreshTokenAsync(token);
+
+            if (account == null) throw new AppException("Invalid token");
+            
+            var refreshToken = account.RefreshTokens.Single(x => x.Token == token);
+            
+            if (!refreshToken.IsActive) throw new AppException("Invalid token");
+            
+            return (refreshToken, account);
         }
 
         private string generateJwtToken(Account account)
@@ -236,6 +337,29 @@ namespace BusinessLogic.Services
                 subject: "Sign-up Verification API - Verify Email",
                 html: $@"<h4>Verify Email</h4>
                          <p>Thanks for registering!</p>
+                         {message}"
+            );
+        }
+
+        private void sendPasswordResetEmail(Account account, string origin)
+        {
+            string message;
+            if (!string.IsNullOrEmpty(origin))
+            {
+                var resetUrl = $"{origin}/account/reset-password?token={account.ResetToken}";
+                message = $@"<p>Please click the below link to reset your password, the link will be valid for 1 day:</p>
+                             <p><a href=""{resetUrl}"">{resetUrl}</a></p>";
+            }
+            else
+            {
+                message = $@"<p>Please use the below token to reset your password with the <code>/accounts/reset-password</code> api route:</p>
+                             <p><code>{account.ResetToken}</code></p>";
+            }
+
+            _emailService.Send(
+                to: account.Email,
+                subject: "Sign-up Verification API - Reset Password",
+                html: $@"<h4>Reset Password Email</h4>
                          {message}"
             );
         }

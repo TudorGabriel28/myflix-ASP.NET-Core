@@ -12,5 +12,8 @@ namespace DataAccess.Repositories
     {
         Task<Account> GetByEmailAsync(string email);
         Task<int> CountAccountsAsync();
+        Task<Account> GetByVerificationTokenAsync(string verificationToken);
+        Task<Account> GetByValidResetTokenAsync(string resetToken);
+        Task<Account> GetByRefreshTokenAsync(string refreshToken);
     }
 }

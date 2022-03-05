@@ -18,6 +18,42 @@ namespace myflix_ASP.NET_Core.Controllers
             _service = service;
         }
 
+        [HttpPost("authenticate")]
+        public async Task<ActionResult<AuthenticateResponse>> Authenticate(AuthenticateRequest model)
+        {
+            var response = await _service.Authenticate(model, ipAddress());
+            setTokenCookie(response.RefreshToken);
+            return Ok(response);
+        }
+
+        [HttpPost("refresh-token")]
+        public async Task<ActionResult<AuthenticateResponse>> RefreshToken()
+        {
+            var refreshToken = Request.Cookies["refreshToken"];
+            var response = await _service.RefreshToken(refreshToken, ipAddress());
+            setTokenCookie(response.RefreshToken);
+            return Ok(response);
+        }
+
+        [Authorize]
+        [HttpPost("revoke-token")]
+        public async Task<IActionResult> RevokeToken(RevokeTokenRequest model)
+        {
+            // accept token from request body or cookie
+            var token = model.Token ?? Request.Cookies["refreshToken"];
+
+            if (string.IsNullOrEmpty(token))
+                return BadRequest(new { message = "Token is required" });
+
+            // users can revoke their own tokens and admins can revoke any tokens
+            if (!Account.OwnsToken(token) && Account.Role != Role.Admin)
+                return Unauthorized(new { message = "Unauthorized" });
+
+            await _service.RevokeToken(token, ipAddress());
+            
+            return Ok(new { message = "Token revoked" });
+        }
+
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterRequest model)
         {
@@ -25,12 +61,32 @@ namespace myflix_ASP.NET_Core.Controllers
             return Ok(new { message = "Registration successful, please check your email for verification instructions" });
         }
 
-        [HttpPost("authenticate")]
-        public async Task<ActionResult<AuthenticateResponse>> Authenticate(AuthenticateRequest model)
+        [HttpPost("verify-email")]
+        public async Task<IActionResult> VerifyEmail(VerifyEmailRequest model)
         {
-            var response = await _service.Authenticate(model, ipAddress());
-            setTokenCookie(response.RefreshToken);
-            return Ok(response);
+            await _service.VerifyEmail(model.Token);
+            return Ok(new { message = "Verification successful, you can now login" });
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest model)
+        {
+            await _service.ForgotPassword(model, Request.Headers["origin"]);
+            return Ok(new { message = "Please check your email for password reset instructions" });
+        }
+
+        [HttpPost("validate-reset-token")]
+        public async Task<IActionResult> ValidateResetToken(ValidateResetTokenRequest model)
+        {
+            await _service.ValidateResetToken(model);
+            return Ok(new { message = "Token is valid" });
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordRequest model)
+        {
+            await _service.ResetPassword(model);
+            return Ok(new { message = "Password reset successful, you can now login" });
         }
 
         // GET: <UserController>
