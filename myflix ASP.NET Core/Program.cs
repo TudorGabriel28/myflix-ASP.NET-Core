@@ -13,12 +13,16 @@ builder.Services.AddDbContext<MyflixContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<IRepository<User>, RepositoryUser>();
-builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddCors();
+builder.Services.AddScoped<IRepositoryAccount, RepositoryAccount>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.IgnoreNullValues = true);
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddSwaggerGen();
 
 
@@ -36,6 +40,9 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+// global error handler
+app.UseMiddleware<ErrorHandlerMiddleware>();
 
 // custom jwt auth middleware
 app.UseMiddleware<JwtMiddleware>();

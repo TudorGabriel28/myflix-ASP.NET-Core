@@ -1,6 +1,4 @@
-﻿
-
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Models
 {
@@ -14,7 +12,7 @@ namespace DataAccess.Models
 		{
 		}
 
-        public DbSet<User> Users { get; set; }
+        public DbSet<Account> Accounts { get; set; }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
