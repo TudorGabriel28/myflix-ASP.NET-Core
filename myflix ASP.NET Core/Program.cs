@@ -5,6 +5,8 @@ using DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 using DataAccess.Helpers;
 using myflix_ASP.NET_Core.Middleware;
+using DataAccess.Models.Entities;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,11 +16,20 @@ builder.Services.AddDbContext<MyflixContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddCors();
+builder.Services.AddHttpClient();
+
 builder.Services.AddScoped<IRepositoryAccount, RepositoryAccount>();
+builder.Services.AddScoped<IRepositoryMovie, RepositoryMovie>();
+builder.Services.AddScoped<IRepositoryGenre, RepositoryGenre>();
+
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IMovieService, MovieService>();
 
-builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.IgnoreNullValues = true);
+builder.Services.AddControllers().AddJsonOptions((x) => {
+    x.JsonSerializerOptions.IgnoreNullValues = true;
+    x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
