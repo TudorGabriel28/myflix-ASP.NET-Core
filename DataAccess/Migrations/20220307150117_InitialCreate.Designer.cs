@@ -4,6 +4,7 @@ using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(MyflixContext))]
-    partial class MyflixContextModelSnapshot : ModelSnapshot
+    [Migration("20220307150117_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,7 +81,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Accounts", (string)null);
+                    b.ToTable("Accounts");
                 });
 
             modelBuilder.Entity("DataAccess.Models.Entities.Episodes", b =>
@@ -110,7 +112,7 @@ namespace DataAccess.Migrations
                     b.HasIndex("MovieId")
                         .IsUnique();
 
-                    b.ToTable("Episodes", (string)null);
+                    b.ToTable("Episodes");
                 });
 
             modelBuilder.Entity("DataAccess.Models.Entities.Genre", b =>
@@ -121,13 +123,22 @@ namespace DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<string>("ImdbId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("MovieId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Genres", (string)null);
+                    b.HasIndex("MovieId");
+
+                    b.ToTable("Genres");
                 });
 
             modelBuilder.Entity("DataAccess.Models.Entities.MeterRanking", b =>
@@ -156,7 +167,7 @@ namespace DataAccess.Migrations
                     b.HasIndex("MovieId")
                         .IsUnique();
 
-                    b.ToTable("MeterRankings", (string)null);
+                    b.ToTable("MeterRankings");
                 });
 
             modelBuilder.Entity("DataAccess.Models.Entities.Movie", b =>
@@ -209,7 +220,9 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Movies", (string)null);
+                    b.HasIndex("UploadedById");
+
+                    b.ToTable("Movies");
                 });
 
             modelBuilder.Entity("DataAccess.Models.Entities.PrimaryImage", b =>
@@ -240,27 +253,12 @@ namespace DataAccess.Migrations
                     b.HasIndex("MovieId")
                         .IsUnique();
 
-                    b.ToTable("PrimaryImages", (string)null);
-                });
-
-            modelBuilder.Entity("GenreMovie", b =>
-                {
-                    b.Property<int>("GenresId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MoviesId")
-                        .HasColumnType("int");
-
-                    b.HasKey("GenresId", "MoviesId");
-
-                    b.HasIndex("MoviesId");
-
-                    b.ToTable("GenreMovie", (string)null);
+                    b.ToTable("PrimaryImages");
                 });
 
             modelBuilder.Entity("DataAccess.Models.Account", b =>
                 {
-                    b.OwnsMany("DataAccess.Models.Account.RefreshTokens#DataAccess.Models.RefreshToken", "RefreshTokens", b1 =>
+                    b.OwnsMany("DataAccess.Models.RefreshToken", "RefreshTokens", b1 =>
                         {
                             b1.Property<int>("AccountId")
                                 .HasColumnType("int");
@@ -296,7 +294,7 @@ namespace DataAccess.Migrations
 
                             b1.HasKey("AccountId", "Id");
 
-                            b1.ToTable("RefreshToken", (string)null);
+                            b1.ToTable("RefreshToken");
 
                             b1.WithOwner("Account")
                                 .HasForeignKey("AccountId");
@@ -318,6 +316,13 @@ namespace DataAccess.Migrations
                     b.Navigation("Movie");
                 });
 
+            modelBuilder.Entity("DataAccess.Models.Entities.Genre", b =>
+                {
+                    b.HasOne("DataAccess.Models.Entities.Movie", null)
+                        .WithMany("Genres")
+                        .HasForeignKey("MovieId");
+                });
+
             modelBuilder.Entity("DataAccess.Models.Entities.MeterRanking", b =>
                 {
                     b.HasOne("DataAccess.Models.Entities.Movie", "Movie")
@@ -327,6 +332,17 @@ namespace DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("Movie");
+                });
+
+            modelBuilder.Entity("DataAccess.Models.Entities.Movie", b =>
+                {
+                    b.HasOne("DataAccess.Models.Account", "UploadedBy")
+                        .WithMany()
+                        .HasForeignKey("UploadedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UploadedBy");
                 });
 
             modelBuilder.Entity("DataAccess.Models.Entities.PrimaryImage", b =>
@@ -340,28 +356,17 @@ namespace DataAccess.Migrations
                     b.Navigation("Movie");
                 });
 
-            modelBuilder.Entity("GenreMovie", b =>
-                {
-                    b.HasOne("DataAccess.Models.Entities.Genre", null)
-                        .WithMany()
-                        .HasForeignKey("GenresId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DataAccess.Models.Entities.Movie", null)
-                        .WithMany()
-                        .HasForeignKey("MoviesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("DataAccess.Models.Entities.Movie", b =>
                 {
                     b.Navigation("Episodes");
 
-                    b.Navigation("MeterRanking");
+                    b.Navigation("Genres");
 
-                    b.Navigation("PrimaryImage");
+                    b.Navigation("MeterRanking")
+                        .IsRequired();
+
+                    b.Navigation("PrimaryImage")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

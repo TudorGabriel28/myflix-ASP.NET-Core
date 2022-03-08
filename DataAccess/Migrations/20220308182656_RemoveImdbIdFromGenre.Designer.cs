@@ -4,6 +4,7 @@ using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(MyflixContext))]
-    partial class MyflixContextModelSnapshot : ModelSnapshot
+    [Migration("20220308182656_RemoveImdbIdFromGenre")]
+    partial class RemoveImdbIdFromGenre
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,7 +81,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Accounts", (string)null);
+                    b.ToTable("Accounts");
                 });
 
             modelBuilder.Entity("DataAccess.Models.Entities.Episodes", b =>
@@ -110,7 +112,7 @@ namespace DataAccess.Migrations
                     b.HasIndex("MovieId")
                         .IsUnique();
 
-                    b.ToTable("Episodes", (string)null);
+                    b.ToTable("Episodes");
                 });
 
             modelBuilder.Entity("DataAccess.Models.Entities.Genre", b =>
@@ -127,7 +129,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Genres", (string)null);
+                    b.ToTable("Genres");
                 });
 
             modelBuilder.Entity("DataAccess.Models.Entities.MeterRanking", b =>
@@ -156,7 +158,7 @@ namespace DataAccess.Migrations
                     b.HasIndex("MovieId")
                         .IsUnique();
 
-                    b.ToTable("MeterRankings", (string)null);
+                    b.ToTable("MeterRankings");
                 });
 
             modelBuilder.Entity("DataAccess.Models.Entities.Movie", b =>
@@ -209,7 +211,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Movies", (string)null);
+                    b.ToTable("Movies");
                 });
 
             modelBuilder.Entity("DataAccess.Models.Entities.PrimaryImage", b =>
@@ -240,7 +242,7 @@ namespace DataAccess.Migrations
                     b.HasIndex("MovieId")
                         .IsUnique();
 
-                    b.ToTable("PrimaryImages", (string)null);
+                    b.ToTable("PrimaryImages");
                 });
 
             modelBuilder.Entity("GenreMovie", b =>
@@ -255,12 +257,12 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("MoviesId");
 
-                    b.ToTable("GenreMovie", (string)null);
+                    b.ToTable("GenreMovie");
                 });
 
             modelBuilder.Entity("DataAccess.Models.Account", b =>
                 {
-                    b.OwnsMany("DataAccess.Models.Account.RefreshTokens#DataAccess.Models.RefreshToken", "RefreshTokens", b1 =>
+                    b.OwnsMany("DataAccess.Models.RefreshToken", "RefreshTokens", b1 =>
                         {
                             b1.Property<int>("AccountId")
                                 .HasColumnType("int");
@@ -296,7 +298,7 @@ namespace DataAccess.Migrations
 
                             b1.HasKey("AccountId", "Id");
 
-                            b1.ToTable("RefreshToken", (string)null);
+                            b1.ToTable("RefreshToken");
 
                             b1.WithOwner("Account")
                                 .HasForeignKey("AccountId");
