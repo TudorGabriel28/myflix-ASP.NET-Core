@@ -13,5 +13,7 @@ namespace DataAccess.Helpers
         public int SmtpPort { get; set; }
         public string SmtpUser { get; set; }
         public string SmtpPass { get; set; }
+        public string XRapidAPIHost { get; set; }
+        public string XRapidAPIKey { get; set; }
     }
 }
