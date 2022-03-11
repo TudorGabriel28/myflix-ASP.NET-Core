@@ -18,7 +18,7 @@ namespace DataAccess.Models.Entities
         public int VoteCount { get; set; }
         public Episodes? Episodes { get; set; }
         public PrimaryImage PrimaryImage { get; set; }
-        public List<Genre> Genres { get; set; }
+        public ICollection<Genre> Genres { get; set; }
         public DateTime ReleaseDate { get; set; }
         public int RuntimeSeconds { get; set; }
         public MeterRanking MeterRanking { get; set; }

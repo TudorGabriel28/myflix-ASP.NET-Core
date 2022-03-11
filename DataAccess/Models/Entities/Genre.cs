@@ -11,6 +11,6 @@ namespace DataAccess.Models.Entities
     {
         public string Name { get; set; }
         [JsonIgnore]
-        public List<Movie> Movies { get; set; }
+        public ICollection<Movie> Movies { get; set; }
     }
 }
