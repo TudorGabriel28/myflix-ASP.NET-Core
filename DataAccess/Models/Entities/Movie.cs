@@ -17,11 +17,11 @@ namespace DataAccess.Models.Entities
         public float AggregateRating { get; set; }
         public int VoteCount { get; set; }
         public Episodes? Episodes { get; set; }
-        public PrimaryImage? PrimaryImage { get; set; }
-        public List<Genre>? Genres { get; set; }
+        public PrimaryImage PrimaryImage { get; set; }
+        public List<Genre> Genres { get; set; }
         public DateTime ReleaseDate { get; set; }
         public int RuntimeSeconds { get; set; }
-        public MeterRanking? MeterRanking { get; set; }
+        public MeterRanking MeterRanking { get; set; }
         public string Plot { get; set; }
         public int UploadedById { get; set; }
         public DateTime UploadedAt { get; set; } = DateTime.UtcNow;
