@@ -1,4 +1,5 @@
-﻿using BusinessLogic.Interfaces;
+﻿using AutoMapper;
+using BusinessLogic.Interfaces;
 using DataAccess.Helpers;
 using DataAccess.Models;
 using DataAccess.Models.Entities;
@@ -18,18 +19,21 @@ namespace BusinessLogic.Services
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly AppSettings _appSettings;
+        private readonly IMapper _mapper;
         private readonly IRepositoryMovie _repositoryMovie;
         private readonly IRepositoryGenre _repositoryGenre;
-
+        
         public MovieService(
             IHttpClientFactory httpClientFactory, 
             IOptions<AppSettings> appSettings, 
+            IMapper mapper,
             IRepositoryMovie repositoryMovie,
             IRepositoryGenre repositoryGenre
             )
         {
             _httpClientFactory = httpClientFactory;
             _appSettings = appSettings.Value;
+            _mapper = mapper;
             _repositoryMovie = repositoryMovie;
             _repositoryGenre = repositoryGenre;
         }
@@ -40,10 +44,20 @@ namespace BusinessLogic.Services
             return movies;
         }
 
-        public async Task<Movie> GetById(int id)
+        public async Task<MovieResponse> GetById(int id, Account account)
         {
             var movie = await _repositoryMovie.GetByIdAsync(id);
-            return movie;
+            var result = _mapper.Map<MovieResponse>(movie);
+            if (account.WishList.Contains(movie))
+            {
+                result.InWishList = true;
+            }
+            if (account.WatchedList.Contains(movie))
+            {
+                result.InWatchedList = true;
+            }
+
+            return result;
         }
 
         public async Task<Movie> Create(string imdbMovieId, int accountId)

@@ -30,7 +30,7 @@ namespace myflix_ASP.NET_Core.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Movie>> Get(int id)
         {
-            var movie = await _service.GetById(id);
+            var movie = await _service.GetById(id, Account);
 
             if (movie != null)
             {
