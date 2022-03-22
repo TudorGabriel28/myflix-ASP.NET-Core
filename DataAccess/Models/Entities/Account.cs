@@ -1,8 +1,10 @@
 ﻿
 
 using DataAccess.Models;
+using DataAccess.Models.Entities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataAccess.Models
 {
@@ -24,6 +26,11 @@ namespace DataAccess.Models
         public DateTime Created { get; set; }
         public DateTime? Updated { get; set; }
         public List<RefreshToken>? RefreshTokens { get; set; }
+        [InverseProperty("WatchedListAccounts")]
+        public virtual ICollection<Movie>? WatchedList { get; set; }
+        [InverseProperty("WishListAccounts")]
+        public virtual ICollection<Movie>? WishList { get; set; }
+
 
         public bool OwnsToken(string token)
         {
