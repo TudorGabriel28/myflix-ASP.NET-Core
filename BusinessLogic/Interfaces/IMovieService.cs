@@ -11,7 +11,7 @@ namespace BusinessLogic.Interfaces
     public interface IMovieService
     {
         Task<IEnumerable<Movie>> GetAll();
-        Task<Movie> GetById(int id);
+        Task<MovieResponse> GetById(int id, Account account);
         Task<Movie> Create(string imdbMovieId, int accountId);
         Task<bool> Delete(int id);
     }

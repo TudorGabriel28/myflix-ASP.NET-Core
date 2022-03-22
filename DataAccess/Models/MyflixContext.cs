@@ -28,6 +28,16 @@ namespace DataAccess.Models
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			OnModelCreatingPartial(modelBuilder);
+
+			modelBuilder.Entity<Account>()
+			.HasMany(left => left.WatchedList)
+			.WithMany(right => right.WatchedListAccounts)
+			.UsingEntity(join => join.ToTable("WatchedList"));
+
+			modelBuilder.Entity<Account>()
+			.HasMany(left => left.WishList)
+			.WithMany(right => right.WishListAccounts)
+			.UsingEntity(join => join.ToTable("WishList"));
 		}
 		partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 

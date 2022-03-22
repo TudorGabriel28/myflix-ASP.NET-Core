@@ -37,7 +37,6 @@ namespace BusinessLogic.Services
 
         public async Task<AuthenticateResponse> Authenticate(AuthenticateRequest model, string ipAddress)
         {
-            // var account = _context.Accounts.SingleOrDefault(x => x.Email == model.Email);
             var account = await _repository.GetByEmailAsync(model.Email);
 
             if (account == null || !account.IsVerified || !BC.Verify(model.Password, account.PasswordHash))

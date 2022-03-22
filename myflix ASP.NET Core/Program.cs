@@ -25,6 +25,8 @@ builder.Services.AddScoped<IRepositoryGenre, RepositoryGenre>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IMovieService, MovieService>();
+builder.Services.AddScoped<IWishListService, WishListService>();
+builder.Services.AddScoped<IWatchedListService, WatchedListService>();
 
 builder.Services.AddControllers().AddJsonOptions((x) => {
     x.JsonSerializerOptions.IgnoreNullValues = true;

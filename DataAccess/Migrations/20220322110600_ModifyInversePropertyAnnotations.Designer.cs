@@ -4,6 +4,7 @@ using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(MyflixContext))]
-    partial class MyflixContextModelSnapshot : ModelSnapshot
+    [Migration("20220322110600_ModifyInversePropertyAnnotations")]
+    partial class ModifyInversePropertyAnnotations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,17 +26,17 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("AccountMovie", b =>
                 {
-                    b.Property<int>("WatchedListAccountsId")
+                    b.Property<int>("WatchedMoviesAccountsId")
                         .HasColumnType("int");
 
-                    b.Property<int>("WatchedListId")
+                    b.Property<int>("WatchedMoviesId")
                         .HasColumnType("int");
 
-                    b.HasKey("WatchedListAccountsId", "WatchedListId");
+                    b.HasKey("WatchedMoviesAccountsId", "WatchedMoviesId");
 
-                    b.HasIndex("WatchedListId");
+                    b.HasIndex("WatchedMoviesId");
 
-                    b.ToTable("WatchedList", (string)null);
+                    b.ToTable("WatchedMovies", (string)null);
                 });
 
             modelBuilder.Entity("AccountMovie1", b =>
@@ -292,13 +294,13 @@ namespace DataAccess.Migrations
                 {
                     b.HasOne("DataAccess.Models.Account", null)
                         .WithMany()
-                        .HasForeignKey("WatchedListAccountsId")
+                        .HasForeignKey("WatchedMoviesAccountsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("DataAccess.Models.Entities.Movie", null)
                         .WithMany()
-                        .HasForeignKey("WatchedListId")
+                        .HasForeignKey("WatchedMoviesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

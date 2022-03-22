@@ -11,11 +11,24 @@ namespace DataAccess.Repositories
 {
     public class RepositoryAccount : Repository<Account>, IRepositoryAccount
     {
-        public RepositoryAccount(MyflixContext context) : base(context) { } 
+        public RepositoryAccount(MyflixContext context) : base(context) { }
+
+        public new async Task<Account> GetByIdAsync(int id, bool asNoTracking = false)
+        {
+            return await _context.Accounts
+                .Include(x => x.WishList)
+                    .ThenInclude(x => x.PrimaryImage)
+                .Include(x => x.WatchedList)
+                    .ThenInclude(x => x.PrimaryImage)
+                .SingleOrDefaultAsync(x => x.Id == id);
+        }
 
         public async Task<Account> GetByEmailAsync(string email)
         {
-            return await _context.Accounts.SingleOrDefaultAsync(x => x.Email == email);
+            return await _context.Accounts
+                .Include(x => x.WishList)
+                .Include(x => x.WatchedList)
+                .SingleOrDefaultAsync(x => x.Email == email);
         }
 
         public async Task<int> CountAccountsAsync()
@@ -39,5 +52,6 @@ namespace DataAccess.Repositories
         {
             return await _context.Accounts.SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == refreshToken));
         }
+
     }
 }

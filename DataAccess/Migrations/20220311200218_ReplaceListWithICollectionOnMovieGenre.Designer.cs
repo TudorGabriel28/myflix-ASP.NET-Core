@@ -4,6 +4,7 @@ using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(MyflixContext))]
-    partial class MyflixContextModelSnapshot : ModelSnapshot
+    [Migration("20220311200218_ReplaceListWithICollectionOnMovieGenre")]
+    partial class ReplaceListWithICollectionOnMovieGenre
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,36 +23,6 @@ namespace DataAccess.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
-
-            modelBuilder.Entity("AccountMovie", b =>
-                {
-                    b.Property<int>("WatchedListAccountsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("WatchedListId")
-                        .HasColumnType("int");
-
-                    b.HasKey("WatchedListAccountsId", "WatchedListId");
-
-                    b.HasIndex("WatchedListId");
-
-                    b.ToTable("WatchedList", (string)null);
-                });
-
-            modelBuilder.Entity("AccountMovie1", b =>
-                {
-                    b.Property<int>("WishListAccountsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("WishListId")
-                        .HasColumnType("int");
-
-                    b.HasKey("WishListAccountsId", "WishListId");
-
-                    b.HasIndex("WishListId");
-
-                    b.ToTable("WishList", (string)null);
-                });
 
             modelBuilder.Entity("DataAccess.Models.Account", b =>
                 {
@@ -286,36 +258,6 @@ namespace DataAccess.Migrations
                     b.HasIndex("MoviesId");
 
                     b.ToTable("GenreMovie");
-                });
-
-            modelBuilder.Entity("AccountMovie", b =>
-                {
-                    b.HasOne("DataAccess.Models.Account", null)
-                        .WithMany()
-                        .HasForeignKey("WatchedListAccountsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DataAccess.Models.Entities.Movie", null)
-                        .WithMany()
-                        .HasForeignKey("WatchedListId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("AccountMovie1", b =>
-                {
-                    b.HasOne("DataAccess.Models.Account", null)
-                        .WithMany()
-                        .HasForeignKey("WishListAccountsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DataAccess.Models.Entities.Movie", null)
-                        .WithMany()
-                        .HasForeignKey("WishListId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("DataAccess.Models.Account", b =>
