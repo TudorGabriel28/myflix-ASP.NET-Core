@@ -15,5 +15,6 @@ namespace DataAccess.Repositories
         Task<Account> GetByVerificationTokenAsync(string verificationToken);
         Task<Account> GetByValidResetTokenAsync(string resetToken);
         Task<Account> GetByRefreshTokenAsync(string refreshToken);
+        new Task<Account> GetByIdAsync(int id, bool asNoTracking = false);
     }
 }
