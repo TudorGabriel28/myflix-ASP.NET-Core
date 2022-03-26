@@ -31,6 +31,8 @@ namespace DataAccess.Helpers
                         return true;
                     }
                 ));
+
+            CreateMap(typeof(PagedList<>), typeof(PagedList<>)).ConvertUsing(typeof(Converter<,>));
         }
     }
 }
