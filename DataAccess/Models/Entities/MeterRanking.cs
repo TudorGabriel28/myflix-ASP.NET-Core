@@ -13,6 +13,7 @@ namespace DataAccess.Models.Entities
         public int CurrentRank { get; set; }
         public string ChangeDirection { get; set; }
         public int Difference { get; set; }
+        [JsonIgnore]
         public Movie Movie { get; set; }
         [JsonIgnore]
         public int MovieId { get; set; }

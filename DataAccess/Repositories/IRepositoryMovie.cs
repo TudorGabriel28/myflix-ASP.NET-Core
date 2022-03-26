@@ -15,6 +15,6 @@ namespace DataAccess.Repositories
         Task<Movie?> GetByImdbIdWithDetailsAsync(string imdbId);
         Task<PagedList<Movie>> GetAllWithDetailsAsync(MovieParameters movieParameters);
         Task<PagedList<Movie>> GetWishListAsync(MovieParameters movieParameters, int accountId);
-        Task<ICollection<Movie>> GetWishListAsync(int accountId);
+        Task<PagedList<Movie>> GetWatchedListAsync(MovieParameters movieParameters, int accountId);
     }
 }

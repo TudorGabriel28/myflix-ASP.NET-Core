@@ -14,6 +14,7 @@ namespace DataAccess.Models.Entities
         public int Height { get; set; }
         public string? Url { get; set; }
         public string? Caption { get; set; }
+        [JsonIgnore]
         public Movie Movie { get; set; }
         [JsonIgnore]
         public int MovieId { get; set; }

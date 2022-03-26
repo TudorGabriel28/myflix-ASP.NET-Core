@@ -47,8 +47,8 @@ namespace BusinessLogic.Services
             {
                 throw new AppException("Account does not exist");
             }
-            var wishlist = await _repositoryMovie.GetWishListAsync(AccountId);
-            if (wishlist.Contains(movie))
+
+            if (account.WishList.Contains(movie))
             {
                 throw new AppException("Movie already in the wishlist");
             }
@@ -69,8 +69,7 @@ namespace BusinessLogic.Services
             {
                 throw new AppException("Account does not exist");
             }
-            var wishlist = await _repositoryMovie.GetWishListAsync(AccountId);
-            if (!wishlist.Contains(movie))
+            if (!account.WishList.Contains(movie))
             {
                 throw new AppException("Movie is not in wishlist");
             }

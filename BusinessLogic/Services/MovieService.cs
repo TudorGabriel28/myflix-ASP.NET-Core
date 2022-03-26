@@ -23,20 +23,22 @@ namespace BusinessLogic.Services
         private readonly IMapper _mapper;
         private readonly IRepositoryMovie _repositoryMovie;
         private readonly IRepositoryGenre _repositoryGenre;
+        private readonly IRepositoryAccount _repositoryAccount;
         
         public MovieService(
             IHttpClientFactory httpClientFactory, 
             IOptions<AppSettings> appSettings, 
             IMapper mapper,
             IRepositoryMovie repositoryMovie,
-            IRepositoryGenre repositoryGenre
-            )
+            IRepositoryGenre repositoryGenre,
+            IRepositoryAccount repositoryAccount)
         {
             _httpClientFactory = httpClientFactory;
             _appSettings = appSettings.Value;
             _mapper = mapper;
             _repositoryMovie = repositoryMovie;
             _repositoryGenre = repositoryGenre;
+            _repositoryAccount = repositoryAccount;
         }
 
         public async Task<PagedList<Movie>> GetAll(MovieParameters movieParameters)
@@ -45,20 +47,21 @@ namespace BusinessLogic.Services
             return moviesAndMetadata;
         }
 
-        public async Task<MovieResponse> GetById(int id, Account account)
+        public async Task<MovieResponse> GetById(int movieId, int accountId)
         {
-            var movie = await _repositoryMovie.GetByIdWithDetailsAsync(id);
-            var result = _mapper.Map<MovieResponse>(movie);
+            var movie = await _repositoryMovie.GetByIdWithDetailsAsync(movieId);
+            var movieDto = _mapper.Map<MovieResponse>(movie);
+            var account = await _repositoryAccount.GetByIdWithMovieListsAsync(accountId);
             if (account.WishList.Contains(movie))
             {
-                result.InWishList = true;
+                movieDto.InWishList = true;
             }
             if (account.WatchedList.Contains(movie))
             {
-                result.InWatchedList = true;
+                movieDto.InWatchedList = true;
             }
 
-            return result;
+            return movieDto;
         }
 
         public async Task<Movie> Create(string imdbMovieId, int accountId)

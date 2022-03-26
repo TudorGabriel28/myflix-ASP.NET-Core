@@ -42,10 +42,10 @@ namespace myflix_ASP.NET_Core.Controllers
 
         // GET <MoviesController>/5
         [Authorize]
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Movie>> Get(int id)
+        [HttpGet("{movieId}")]
+        public async Task<ActionResult<MovieResponse>> Get(int movieId)
         {
-            var movie = await _service.GetById(id, Account);
+            var movie = await _service.GetById(movieId, Account.Id);
 
             if (movie != null)
             {

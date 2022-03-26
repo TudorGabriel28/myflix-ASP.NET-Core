@@ -57,15 +57,17 @@ namespace DataAccess.Repositories
 			return await PagedList<Movie>.ToPagedListAsync(wishlist, movieParameters.PageNumber, movieParameters.PageSize);
 		}
 
-		public async Task<ICollection<Movie>> GetWishListAsync(int accountId)
+		public async Task<PagedList<Movie>> GetWatchedListAsync(MovieParameters movieParameters, int accountId)
 		{
-			var wishlist = await _context.Movies.Include(m => m.Episodes)
+			var watchedlist = _context.Movies
+				.Include(m => m.Episodes)
 				.Include(m => m.Genres)
 				.Include(m => m.PrimaryImage)
 				.Include(m => m.MeterRanking)
-				.Where(m => m.WishListAccount.Any(a => a.Id == accountId)).ToListAsync();
+				.Where(m => m.WatchedListAccount.Any(a => a.Id == accountId));
 
-			return wishlist;
+			return await PagedList<Movie>.ToPagedListAsync(watchedlist, movieParameters.PageNumber, movieParameters.PageSize);
 		}
+
 	}
 }

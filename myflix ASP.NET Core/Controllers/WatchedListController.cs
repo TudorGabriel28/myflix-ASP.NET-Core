@@ -1,6 +1,8 @@
 ﻿using BusinessLogic.Interfaces;
 using DataAccess.Models.Entities;
+using DataAccess.Models.Parameters;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace myflix_ASP.NET_Core.Controllers
 {
@@ -16,14 +18,23 @@ namespace myflix_ASP.NET_Core.Controllers
         // GET: <WishListController>
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Movie>>> Get()
+        public async Task<ActionResult<IEnumerable<Movie>>> Get([FromQuery] MovieParameters movieParameters)
         {
-            var result = await _service.Get(Account.Id);
-            if (result != null)
+            var watchedList = await _service.Get(movieParameters, Account.Id);
+
+            var metadata = new
             {
-                return Ok(result);
-            }
-            return BadRequest();
+                watchedList.TotalCount,
+                watchedList.PageSize,
+                watchedList.CurrentPage,
+                watchedList.TotalPages,
+                watchedList.HasNext,
+                watchedList.HasPrevious
+            };
+
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(metadata));
+
+            return Ok(watchedList);
         }
 
         // PUT <WishListController>/5

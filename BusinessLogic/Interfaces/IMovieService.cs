@@ -13,7 +13,7 @@ namespace BusinessLogic.Interfaces
     public interface IMovieService
     {
         Task<PagedList<Movie>> GetAll(MovieParameters movieParameters);
-        Task<MovieResponse> GetById(int id, Account account);
+        Task<MovieResponse> GetById(int movieId, int accountId);
         Task<Movie> Create(string imdbMovieId, int accountId);
         Task<bool> Delete(int id);
     }

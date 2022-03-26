@@ -1,6 +1,7 @@
 using AutoMapper;
 using DataAccess.Models;
 using DataAccess.Models.Accounts;
+using DataAccess.Models.Entities;
 
 namespace DataAccess.Helpers
 {
@@ -33,6 +34,8 @@ namespace DataAccess.Helpers
                 ));
 
             CreateMap(typeof(PagedList<>), typeof(PagedList<>)).ConvertUsing(typeof(Converter<,>));
+
+            CreateMap<Movie, MovieResponse>();
         }
     }
 }

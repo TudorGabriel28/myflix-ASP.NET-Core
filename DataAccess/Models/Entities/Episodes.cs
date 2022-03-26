@@ -14,6 +14,7 @@ namespace DataAccess.Models.Entities
         public int FirstYear { get; set; }
         public int LastYear { get; set; }
         public int TotalEpisodes { get; set; }
+        [JsonIgnore]
         public Movie Movie { get; set; }
         [JsonIgnore]
         public int MovieId { get; set; }
