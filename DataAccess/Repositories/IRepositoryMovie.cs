@@ -1,4 +1,6 @@
-﻿using DataAccess.Models.Entities;
+﻿using DataAccess.Helpers;
+using DataAccess.Models.Entities;
+using DataAccess.Models.Parameters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +11,8 @@ namespace DataAccess.Repositories
 {
     public interface IRepositoryMovie : IRepository<Movie>
     {
-        Task<Movie?> GetByImdbIdAsync(string imdbId);
-        new Task<IEnumerable<Movie>> GetAllAsync();
-        new Task<Movie> GetByIdAsync(int id, bool asNoTracking = false);
-
+        Task<Movie> GetByIdWithDetailsAsync(int id);
+        Task<Movie?> GetByImdbIdWithDetailsAsync(string imdbId);
+        Task<PagedList<Movie>> GetAllWithDetailsAsync(MovieParameters movieParameters);
     }
 }

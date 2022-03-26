@@ -1,5 +1,7 @@
-﻿using DataAccess.Models;
+﻿using DataAccess.Helpers;
+using DataAccess.Models;
 using DataAccess.Models.Entities;
+using DataAccess.Models.Parameters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +12,7 @@ namespace BusinessLogic.Interfaces
 {
     public interface IMovieService
     {
-        Task<IEnumerable<Movie>> GetAll();
+        Task<PagedList<Movie>> GetAll(MovieParameters movieParameters);
         Task<MovieResponse> GetById(int id, Account account);
         Task<Movie> Create(string imdbMovieId, int accountId);
         Task<bool> Delete(int id);

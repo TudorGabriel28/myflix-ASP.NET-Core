@@ -1,7 +1,9 @@
 ﻿using BusinessLogic.Interfaces;
 using DataAccess.Models;
 using DataAccess.Models.Entities;
+using DataAccess.Models.Parameters;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,9 +22,22 @@ namespace myflix_ASP.NET_Core.Controllers
         // GET: <MovieController>
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Movie>>> GetAll()
+        public async Task<ActionResult<IEnumerable<Movie>>> GetAll([FromQuery] MovieParameters movieParameters)
         {
-            return Ok(await _service.GetAll());
+            var movies = await _service.GetAll(movieParameters);
+
+            var metadata = new
+            {
+                movies.TotalCount,
+                movies.PageSize,
+                movies.CurrentPage,
+                movies.TotalPages,
+                movies.HasNext,
+                movies.HasPrevious
+            };
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(metadata));
+
+            return Ok(movies);
         }
 
         // GET <MoviesController>/5

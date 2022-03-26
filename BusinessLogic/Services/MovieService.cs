@@ -3,6 +3,7 @@ using BusinessLogic.Interfaces;
 using DataAccess.Helpers;
 using DataAccess.Models;
 using DataAccess.Models.Entities;
+using DataAccess.Models.Parameters;
 using DataAccess.Repositories;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
@@ -38,15 +39,15 @@ namespace BusinessLogic.Services
             _repositoryGenre = repositoryGenre;
         }
 
-        public async Task<IEnumerable<Movie>> GetAll()
+        public async Task<PagedList<Movie>> GetAll(MovieParameters movieParameters)
         {
-            var movies = await _repositoryMovie.GetAllAsync();
-            return movies;
+            var moviesAndMetadata = await _repositoryMovie.GetAllWithDetailsAsync(movieParameters);
+            return moviesAndMetadata;
         }
 
         public async Task<MovieResponse> GetById(int id, Account account)
         {
-            var movie = await _repositoryMovie.GetByIdAsync(id);
+            var movie = await _repositoryMovie.GetByIdWithDetailsAsync(id);
             var result = _mapper.Map<MovieResponse>(movie);
             if (account.WishList.Contains(movie))
             {
@@ -63,7 +64,7 @@ namespace BusinessLogic.Services
         public async Task<Movie> Create(string imdbMovieId, int accountId)
         {
             // verify if movie already exists in db
-            var movie = await _repositoryMovie.GetByImdbIdAsync(imdbMovieId);
+            var movie = await _repositoryMovie.GetByImdbIdWithDetailsAsync(imdbMovieId);
             if (movie != null)
             {
                 return movie;

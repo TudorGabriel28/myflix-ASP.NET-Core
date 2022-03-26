@@ -8,8 +8,7 @@ using System.Threading.Tasks;
 namespace DataAccess.Repositories
 {
     public interface IRepositoryGenre : IRepository<Genre>
-    {
+    { 
         Task<Genre?> GetByNameAsync(string imdbId);
-       
     }
 }
