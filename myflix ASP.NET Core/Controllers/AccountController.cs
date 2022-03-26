@@ -1,7 +1,9 @@
 ﻿using BusinessLogic.Interfaces;
 using DataAccess.Models;
 using DataAccess.Models.Accounts;
+using DataAccess.Models.Parameters;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -92,9 +94,23 @@ namespace myflix_ASP.NET_Core.Controllers
         // GET: <UserController>
         [Authorize(Role.Admin)]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AccountResponse>>> GetAll()
+        public async Task<ActionResult<IEnumerable<AccountResponse>>> GetAll([FromQuery] AccountParameters accountParameters)
         {
-            return Ok(await _service.GetAll());
+            var accounts = await _service.GetAll(accountParameters);
+
+            var metadata = new
+            {
+                accounts.TotalCount,
+                accounts.PageSize,
+                accounts.CurrentPage,
+                accounts.TotalPages,
+                accounts.HasNext,
+                accounts.HasPrevious
+            };
+
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(metadata));
+
+            return Ok(accounts);
         }
 
         // GET <UserController>/5

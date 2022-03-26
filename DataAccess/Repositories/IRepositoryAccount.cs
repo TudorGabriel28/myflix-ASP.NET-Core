@@ -1,5 +1,7 @@
-﻿using DataAccess.Models;
+﻿using DataAccess.Helpers;
+using DataAccess.Models;
 using DataAccess.Models.Accounts;
+using DataAccess.Models.Parameters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +12,12 @@ namespace DataAccess.Repositories
 {
     public interface IRepositoryAccount : IRepository<Account>
     {
-        Task<Account> GetByEmailAsync(string email);
+        Task<PagedList<Account>> GetAllAsync(AccountParameters accountParameters);
+        Task<Account> GetByIdWithDetailsAsync(int id);
+        Task<Account> GetByEmailWithDetailsAsync(string email);
         Task<int> CountAccountsAsync();
         Task<Account> GetByVerificationTokenAsync(string verificationToken);
         Task<Account> GetByValidResetTokenAsync(string resetToken);
         Task<Account> GetByRefreshTokenAsync(string refreshToken);
-        new Task<Account> GetByIdAsync(int id, bool asNoTracking = false);
     }
 }

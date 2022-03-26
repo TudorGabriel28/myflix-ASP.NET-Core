@@ -1,5 +1,7 @@
-﻿using DataAccess.Models;
+﻿using DataAccess.Helpers;
+using DataAccess.Models;
 using DataAccess.Models.Accounts;
+using DataAccess.Models.Parameters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +20,7 @@ namespace BusinessLogic.Interfaces
         Task ForgotPassword(ForgotPasswordRequest model, string origin);
         Task ValidateResetToken(ValidateResetTokenRequest model);
         Task ResetPassword(ResetPasswordRequest model);
-        Task<IEnumerable<AccountResponse>> GetAll();
+        Task<PagedList<AccountResponse>> GetAll(AccountParameters accountParameters);
         Task<AccountResponse> GetById(int id);
         Task<AccountResponse> Create(CreateRequest model);
         Task<AccountResponse> Update(int id, UpdateRequest model);

@@ -1,5 +1,7 @@
-﻿using DataAccess.Models;
+﻿using DataAccess.Helpers;
+using DataAccess.Models;
 using DataAccess.Models.Accounts;
+using DataAccess.Models.Parameters;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -13,7 +15,12 @@ namespace DataAccess.Repositories
     {
         public RepositoryAccount(MyflixContext context) : base(context) { }
 
-        public new async Task<Account> GetByIdAsync(int id, bool asNoTracking = false)
+        public async Task<PagedList<Account>> GetAllAsync(AccountParameters accountParameters)
+        {
+            return await PagedList<Account>.ToPagedListAsync(_context.Accounts, accountParameters.PageNumber, accountParameters.PageSize);
+        }
+
+        public async Task<Account> GetByIdWithDetailsAsync(int id)
         {
             return await _context.Accounts
                 .Include(x => x.WishList)
@@ -23,7 +30,7 @@ namespace DataAccess.Repositories
                 .SingleOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<Account> GetByEmailAsync(string email)
+        public async Task<Account> GetByEmailWithDetailsAsync(string email)
         {
             return await _context.Accounts
                 .Include(x => x.WishList)
