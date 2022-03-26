@@ -31,12 +31,12 @@ namespace DataAccess.Models
 
 			modelBuilder.Entity<Account>()
 			.HasMany(left => left.WatchedList)
-			.WithMany(right => right.WatchedListAccounts)
+			.WithMany(right => right.WatchedListAccount)
 			.UsingEntity(join => join.ToTable("WatchedList"));
 
 			modelBuilder.Entity<Account>()
 			.HasMany(left => left.WishList)
-			.WithMany(right => right.WishListAccounts)
+			.WithMany(right => right.WishListAccount)
 			.UsingEntity(join => join.ToTable("WishList"));
 		}
 		partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

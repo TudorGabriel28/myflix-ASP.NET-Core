@@ -32,7 +32,7 @@ namespace BusinessLogic.Services
 
         public async Task<bool> Add(int AccountId, int MovieId)
         {
-            var movie = await _repositoryMovie.GetByIdAsync(MovieId);
+            var movie = await _repositoryMovie.GetByIdWithDetailsAsync(MovieId);
             if (movie == null)
             {
                 throw new AppException("Movie does not exist anymore");
@@ -56,7 +56,7 @@ namespace BusinessLogic.Services
         }
         public async Task<bool> Remove(int AccountId, int MovieId)
         {
-            var movie = await _repositoryMovie.GetByIdAsync(MovieId);
+            var movie = await _repositoryMovie.GetByIdWithDetailsAsync(MovieId);
             if (movie == null)
             {
                 throw new Exception("Movie does not exist anymore");

@@ -27,9 +27,9 @@ namespace DataAccess.Models.Entities
         public int UploadedById { get; set; }
         public DateTime UploadedAt { get; set; } = DateTime.UtcNow;
         [JsonIgnore]
-        public ICollection<Account> WishListAccounts { get; set;}
+        public ICollection<Account> WishListAccount { get; set;}
         [JsonIgnore]
-        public ICollection<Account> WatchedListAccounts { get; set;}
+        public ICollection<Account> WatchedListAccount { get; set;}
             
     }
 

@@ -24,7 +24,7 @@ namespace DataAccess.Repositories
 			return await PagedList<Movie>.ToPagedListAsync(movies, movieParameters.PageNumber, movieParameters.PageSize);
 		}
 
-		public async Task<Movie?> GetByImdbIdWithDetailsAsync(string imdbId)
+        public async Task<Movie?> GetByImdbIdWithDetailsAsync(string imdbId)
         {
 			var movie = await _context.Movies
 				.Include(m => m.Episodes)
@@ -44,6 +44,28 @@ namespace DataAccess.Repositories
 				.Include(m => m.MeterRanking)
 				.SingleOrDefaultAsync();
 			return movie;
+		}
+
+		public async Task<PagedList<Movie>> GetWishListAsync(MovieParameters movieParameters, int accountId)
+		{
+			var wishlist = _context.Movies.Include(m => m.Episodes)
+				.Include(m => m.Genres)
+				.Include(m => m.PrimaryImage)
+				.Include(m => m.MeterRanking)
+				.Where(m => m.WishListAccount.Any(a => a.Id == accountId));
+
+			return await PagedList<Movie>.ToPagedListAsync(wishlist, movieParameters.PageNumber, movieParameters.PageSize);
+		}
+
+		public async Task<ICollection<Movie>> GetWishListAsync(int accountId)
+		{
+			var wishlist = await _context.Movies.Include(m => m.Episodes)
+				.Include(m => m.Genres)
+				.Include(m => m.PrimaryImage)
+				.Include(m => m.MeterRanking)
+				.Where(m => m.WishListAccount.Any(a => a.Id == accountId)).ToListAsync();
+
+			return wishlist;
 		}
 	}
 }

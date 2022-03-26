@@ -26,9 +26,9 @@ namespace DataAccess.Models
         public DateTime Created { get; set; }
         public DateTime? Updated { get; set; }
         public List<RefreshToken>? RefreshTokens { get; set; }
-        [InverseProperty("WatchedListAccounts")]
+        [InverseProperty("WatchedListAccount")]
         public virtual ICollection<Movie>? WatchedList { get; set; }
-        [InverseProperty("WishListAccounts")]
+        [InverseProperty("WishListAccount")]
         public virtual ICollection<Movie>? WishList { get; set; }
 
 

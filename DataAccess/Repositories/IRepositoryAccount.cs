@@ -13,8 +13,8 @@ namespace DataAccess.Repositories
     public interface IRepositoryAccount : IRepository<Account>
     {
         Task<PagedList<Account>> GetAllAsync(AccountParameters accountParameters);
-        Task<Account> GetByIdWithDetailsAsync(int id);
-        Task<Account> GetByEmailWithDetailsAsync(string email);
+        Task<Account> GetByEmailAsync(string email);
+        Task<Account> GetByIdWithMovieListsAsync(int acccountId);
         Task<int> CountAccountsAsync();
         Task<Account> GetByVerificationTokenAsync(string verificationToken);
         Task<Account> GetByValidResetTokenAsync(string resetToken);

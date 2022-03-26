@@ -20,22 +20,18 @@ namespace DataAccess.Repositories
             return await PagedList<Account>.ToPagedListAsync(_context.Accounts, accountParameters.PageNumber, accountParameters.PageSize);
         }
 
-        public async Task<Account> GetByIdWithDetailsAsync(int id)
+        public async Task<Account> GetByEmailAsync(string email)
         {
             return await _context.Accounts
-                .Include(x => x.WishList)
-                    .ThenInclude(x => x.PrimaryImage)
-                .Include(x => x.WatchedList)
-                    .ThenInclude(x => x.PrimaryImage)
-                .SingleOrDefaultAsync(x => x.Id == id);
+                .SingleOrDefaultAsync(x => x.Email == email);
         }
 
-        public async Task<Account> GetByEmailWithDetailsAsync(string email)
+        public async Task<Account> GetByIdWithMovieListsAsync(int acccountId)
         {
             return await _context.Accounts
                 .Include(x => x.WishList)
                 .Include(x => x.WatchedList)
-                .SingleOrDefaultAsync(x => x.Email == email);
+                .SingleOrDefaultAsync(x => x.Id == acccountId);
         }
 
         public async Task<int> CountAccountsAsync()

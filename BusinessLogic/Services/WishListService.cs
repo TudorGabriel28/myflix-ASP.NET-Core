@@ -3,6 +3,7 @@ using BusinessLogic.Interfaces;
 using DataAccess.Helpers;
 using DataAccess.Models;
 using DataAccess.Models.Entities;
+using DataAccess.Models.Parameters;
 using DataAccess.Repositories;
 using System;
 using System.Collections.Generic;
@@ -22,14 +23,16 @@ namespace BusinessLogic.Services
             _repositoryMovie = repositoryMovie;
         }
 
-        public async Task<IEnumerable<Movie>> Get(int AccountId)
+        public async Task<PagedList<Movie>> Get(MovieParameters movieParameters, int AccountId)
         {
             var account = await _repositoryAccount.GetByIdAsync(AccountId);
             if(account == null)
             {
                 throw new AppException("Account does not exist");
             }
-            return account.WishList;
+            var wishlist = await _repositoryMovie.GetWishListAsync(movieParameters, AccountId);
+
+            return wishlist;
         }
 
         public async Task<bool> Add(int AccountId, int MovieId)
@@ -39,45 +42,40 @@ namespace BusinessLogic.Services
             {
                 throw new AppException("Movie does not exist anymore");
             }
-            var account = await _repositoryAccount.GetByIdAsync(AccountId);
+            var account = await _repositoryAccount.GetByIdWithMovieListsAsync(AccountId);
             if(account == null)
             {
                 throw new AppException("Account does not exist");
             }
-            if (account.WishList.Contains(movie))
+            var wishlist = await _repositoryMovie.GetWishListAsync(AccountId);
+            if (wishlist.Contains(movie))
             {
                 throw new AppException("Movie already in the wishlist");
             }
             account.WishList.Add(movie);
-            var result = await _repositoryAccount.UpdateAsync(account);
-            if(result == null)
-            {
-                return false;
-            }
+            await _repositoryAccount.UpdateAsync(account);
             return true;
+            
         }
         public async Task<bool> Remove(int AccountId, int MovieId)
         {
             var movie = await _repositoryMovie.GetByIdAsync(MovieId);
             if (movie == null)
             {
-                throw new Exception("Movie does not exist anymore");
+                throw new AppException("Movie does not exist anymore");
             }
-            var account = await _repositoryAccount.GetByIdAsync(AccountId);
+            var account = await _repositoryAccount.GetByIdWithMovieListsAsync(AccountId);
             if (account == null)
             {
                 throw new AppException("Account does not exist");
             }
-            if (!account.WishList.Contains(movie))
+            var wishlist = await _repositoryMovie.GetWishListAsync(AccountId);
+            if (!wishlist.Contains(movie))
             {
-                throw new Exception("Movie does not exist in wishlist");
+                throw new AppException("Movie is not in wishlist");
             }
             account.WishList.Remove(movie);
-            var result = await _repositoryAccount.UpdateAsync(account);
-            if (result == null)
-            {
-                return false;
-            }
+            await _repositoryAccount.UpdateAsync(account);
             return true;
         }
     }

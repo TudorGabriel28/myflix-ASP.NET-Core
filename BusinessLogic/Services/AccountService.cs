@@ -38,7 +38,7 @@ namespace BusinessLogic.Services
 
         public async Task<AuthenticateResponse> Authenticate(AuthenticateRequest model, string ipAddress)
         {
-            var account = await _repository.GetByEmailWithDetailsAsync(model.Email);
+            var account = await _repository.GetByEmailAsync(model.Email);
 
             if (account == null || !account.IsVerified || !BC.Verify(model.Password, account.PasswordHash))
                 throw new AppException("Email or password is incorrect");
@@ -98,7 +98,7 @@ namespace BusinessLogic.Services
         public async Task Register(RegisterRequest model, string origin)
         {
             // validate
-            if (await _repository.GetByEmailWithDetailsAsync(model.Email) != null)
+            if (await _repository.GetByEmailAsync(model.Email) != null)
             {
                 // send already registered error in email to prevent account enumeration
                 sendAlreadyRegisteredEmail(model.Email, origin);
@@ -138,7 +138,7 @@ namespace BusinessLogic.Services
 
         public async Task ForgotPassword(ForgotPasswordRequest model, string origin)
         {
-            var account = await _repository.GetByEmailWithDetailsAsync(model.Email);
+            var account = await _repository.GetByEmailAsync(model.Email);
 
             // always return ok response to prevent email enumeration
             if (account == null) return;
@@ -193,7 +193,7 @@ namespace BusinessLogic.Services
         public async Task<AccountResponse> Create(CreateRequest model)
         {
             // validate
-            if (await _repository.GetByEmailWithDetailsAsync(model.Email) != null)
+            if (await _repository.GetByEmailAsync(model.Email) != null)
                 throw new AppException($"Email '{model.Email}' is already registered");
 
             // map model to new account object
@@ -215,7 +215,7 @@ namespace BusinessLogic.Services
             var account = await getAccount(id);
 
             // validate
-            if (account.Email != model.Email && await _repository.GetByEmailWithDetailsAsync(model.Email) != null)
+            if (account.Email != model.Email && await _repository.GetByEmailAsync(model.Email) != null)
                 throw new AppException($"Email '{model.Email}' is already taken");
 
             // hash password if it was entered
