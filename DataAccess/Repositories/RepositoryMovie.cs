@@ -19,12 +19,22 @@ namespace DataAccess.Repositories
 				.Include(m => m.Genres)
 				.Include(m => m.PrimaryImage)
 				.Include(m => m.MeterRanking)
-				.OrderBy(m => m.Title);
+				.OrderBy(m => m.Title)
+				.AsNoTracking();
+			if(!string.IsNullOrEmpty(movieParameters.Genre))
+            {
+				movies = movies.Where(m => m.Genres.Any(g => g.Name == movieParameters.Genre));
+			}
+
+			if (!string.IsNullOrWhiteSpace(movieParameters.Title))
+            {
+				movies = movies.Where(m => m.Title.ToLower().Contains(movieParameters.Title.Trim().ToLower()));
+			}
 
 			return await PagedList<Movie>.ToPagedListAsync(movies, movieParameters.PageNumber, movieParameters.PageSize);
 		}
 
-        public async Task<Movie?> GetByImdbIdWithDetailsAsync(string imdbId)
+		public async Task<Movie?> GetByImdbIdWithDetailsAsync(string imdbId)
         {
 			var movie = await _context.Movies
 				.Include(m => m.Episodes)

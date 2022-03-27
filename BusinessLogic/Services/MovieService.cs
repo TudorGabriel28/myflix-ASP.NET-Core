@@ -43,6 +43,16 @@ namespace BusinessLogic.Services
 
         public async Task<PagedList<Movie>> GetAll(MovieParameters movieParameters)
         {
+            if(movieParameters.Genre != null)
+            {
+                var genre = await _repositoryGenre.GetByNameAsync(movieParameters.Genre);
+
+                if (genre == null)
+                {
+                    throw new AppException("Genre doesn't exist.");
+                }
+            }
+            
             var moviesAndMetadata = await _repositoryMovie.GetAllWithDetailsAsync(movieParameters);
             return moviesAndMetadata;
         }
