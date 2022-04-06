@@ -5,7 +5,7 @@ Myflix is a web application which offers users the possiblity to keep track of t
   
   The web application API is built with ASP.NET Core and uses Microsoft SQL database.
   
-  The frontend will be based on VueJs framework together with Bootstrap 5.
+  The clien side of the web app is based on VueJs framework together with Bootstrap 5. Check out the repository for frontend -> https://github.com/TudorGabriel28/myflix-Vue-Client
 
 # Interface and functionalities
 
