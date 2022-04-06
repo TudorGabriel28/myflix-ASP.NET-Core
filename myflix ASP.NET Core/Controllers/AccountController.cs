@@ -146,9 +146,6 @@ namespace myflix_ASP.NET_Core.Controllers
 
             return BadRequest();
         }
-        /* public void Post([FromBody] string value)
-         {
-         }*/
 
         // PUT <UserController>/5
         [Authorize]
@@ -172,9 +169,6 @@ namespace myflix_ASP.NET_Core.Controllers
 
             return NotFound();
         }
-        /*public void Put(int id, [FromBody] string value)
-        {
-        }*/
 
         // DELETE <UserController>/5
         [Authorize]

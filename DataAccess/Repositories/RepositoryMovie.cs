@@ -19,7 +19,7 @@ namespace DataAccess.Repositories
 				.Include(m => m.Genres)
 				.Include(m => m.PrimaryImage)
 				.Include(m => m.MeterRanking)
-				.OrderBy(m => m.Title)
+				.OrderBy(m => m.UploadedAt)
 				.AsNoTracking();
 			if(!string.IsNullOrEmpty(movieParameters.Genre))
             {

@@ -15,7 +15,17 @@ builder.Services.AddDbContext<MyflixContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddCors();
+builder.Services.AddCors(opt =>
+{
+    opt.AddDefaultPolicy(builder =>
+    {
+        builder.WithOrigins("https://myflix-movie-db.herokuapp.com/", " http://localhost:3000/")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .WithExposedHeaders("X-Pagination");
+    });
+});
+
 builder.Services.AddHttpClient();
 
 builder.Services.AddScoped<IRepositoryAccount, RepositoryAccount>();
@@ -59,6 +69,8 @@ app.UseMiddleware<ErrorHandlerMiddleware>();
 
 // custom jwt auth middleware
 app.UseMiddleware<JwtMiddleware>();
+
+app.UseCors();
 
 app.MapControllers();
 
