@@ -19,7 +19,7 @@ builder.Services.AddCors(opt =>
 {
     opt.AddDefaultPolicy(builder =>
     {
-        builder.WithOrigins("https://myflix-movie-db.herokuapp.com/", " http://localhost:3000/")
+        builder.WithOrigins("https://myflix-movie-db.herokuapp.com", "http://localhost:3000")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .WithExposedHeaders("X-Pagination");
