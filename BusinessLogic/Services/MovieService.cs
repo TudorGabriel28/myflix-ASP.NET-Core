@@ -81,7 +81,7 @@ namespace BusinessLogic.Services
             var movie = await _repositoryMovie.GetByImdbIdWithDetailsAsync(movieRequest.ImdbId);
             if (movie != null)
             {
-                return movie;
+                throw new AppException("Movie already exists in myflix database");
             }
             
             // make api call to RapidApi Data-Imdb API for movie information
