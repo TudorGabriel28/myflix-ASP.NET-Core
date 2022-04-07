@@ -9,6 +9,7 @@ namespace DataAccess.Models
 {
     public class MovieResponse
     {
+        public int Id { get; set; }
         public string ImdbId { get; set; }
         public string Title { get; set; }
         public string TitleType { get; set; }
