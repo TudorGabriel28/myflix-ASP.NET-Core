@@ -3,6 +3,7 @@ using BusinessLogic.Interfaces;
 using DataAccess.Helpers;
 using DataAccess.Models;
 using DataAccess.Models.Entities;
+using DataAccess.Models.Movies;
 using DataAccess.Models.Parameters;
 using DataAccess.Repositories;
 using Microsoft.Extensions.Options;
@@ -74,17 +75,17 @@ namespace BusinessLogic.Services
             return movieDto;
         }
 
-        public async Task<Movie> Create(string imdbMovieId, int accountId)
+        public async Task<Movie> Create(CreateMovieRequest movieRequest, int accountId)
         {
             // verify if movie already exists in db
-            var movie = await _repositoryMovie.GetByImdbIdWithDetailsAsync(imdbMovieId);
+            var movie = await _repositoryMovie.GetByImdbIdWithDetailsAsync(movieRequest.ImdbId);
             if (movie != null)
             {
                 return movie;
             }
             
             // make api call to RapidApi Data-Imdb API for movie information
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://data-imdb1.p.rapidapi.com/titles/{imdbMovieId}?info=base_info");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://data-imdb1.p.rapidapi.com/titles/{movieRequest.ImdbId}?info=base_info");
             request.Headers.Add("X-RapidAPI-Host", _appSettings.XRapidAPIHost);
             request.Headers.Add("X-RapidAPI-Key", _appSettings.XRapidAPIKey);
             var httpClient = _httpClientFactory.CreateClient();

@@ -1,6 +1,7 @@
 ﻿using BusinessLogic.Interfaces;
 using DataAccess.Models;
 using DataAccess.Models.Entities;
+using DataAccess.Models.Movies;
 using DataAccess.Models.Parameters;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
@@ -57,9 +58,9 @@ namespace myflix_ASP.NET_Core.Controllers
         // POST: <MoviesController>
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult<Movie>> Create([FromBody] string imdbMovieId)
+        public async Task<ActionResult<Movie>> Create(CreateMovieRequest model)
         {
-            var movie = await _service.Create(imdbMovieId, Account.Id);
+            var movie = await _service.Create(model, Account.Id);
             if (movie != null)
             {
                 return Created($"Movie/{movie.Id}", movie);
