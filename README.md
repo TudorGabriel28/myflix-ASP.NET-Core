@@ -1,6 +1,12 @@
 # Myflix - Your personal database for movies and TV shows
 Myflix is a web application which offers users the possiblity to keep track of their watched movies from all platforms, review, rate and recommend them. The platform is also meant to be a social space, where the user can communicate with their friends and get new movies ideas from his friends' watched movies and reviews.
 
+Test the beta version of the site -> https://myflix-movie-db.herokuapp.com/
+
+You can login with this account:  
+Email: user@user.com  
+Password: Test1234 
+
 # Technology
   
   The web application API is built with ASP.NET Core and uses Microsoft SQL database.
